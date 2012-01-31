@@ -4,6 +4,7 @@
 :project_id => @project_id }, :html => {:method => :post, :multipart => false, :id => 'template_form'} do |f| %>
 <%= f.hidden_field :author_id %>
 <%= f.text_field :name, :size => 30, :required => true %></p>
+<p><%= l(:label_template_shared_across_projects) %> <%= f.check_box :shared %></p>
 <%= f.text_area :text, :cols => 100, :rows => 25, :class => 'wiki-edit', :accesskey => accesskey(:edit) %>
 <%= wikitoolbar_for 'mitemplate_text' %></div>
 </div>

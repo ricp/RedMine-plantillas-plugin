@@ -3,6 +3,8 @@ module ProjectsControllerPatch
     	base.send(:include, InstanceMethods)
 	    base.class_eval do
 	      alias_method_chain :settings, :template
+	      helper :templates
+	      include TemplatesHelper
 	    end
     end
 module InstanceMethods
@@ -15,7 +17,9 @@ module InstanceMethods
     @wiki ||= @project.wiki
     @template ||= @project.template
     @project_id = @project.id
-    @templates = WikiTemplates.find(:all,:conditions => ["project_id = ? " , @project_id ])
+    visible_conditions = Project.visible_condition(User.current) # return SQL fragment for current user's authorized projects
+    @templates = WikiTemplates.find(:all, :joins => :project,
+                                    :conditions => ["project_id = ? OR (shared = ? AND #{visible_conditions})" , @project_id, true ])
   end
 end
 end

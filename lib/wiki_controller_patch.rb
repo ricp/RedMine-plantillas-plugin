@@ -4,7 +4,10 @@ module WikiControllerPatch
 	    base.class_eval do
 	      alias_method_chain :edit, :template
 	      alias_method_chain :show, :template
-              alias_method_chain :preview, :template
+        alias_method_chain :preview, :template
+        
+        helper :templates
+	      include TemplatesHelper
 	    end
     end
 	module InstanceMethods
@@ -39,7 +42,9 @@ module WikiControllerPatch
  		if @page.new_record?
 		      if User.current.allowed_to?(:edit_wiki_pages, @project) && editable?
 			#edit
-			@templates = WikiTemplates.find(:all,:conditions => ["project_id = ? " , @project_id ])
+			visible_conditions = Project.visible_condition(User.current) # return SQL fragment for current user's authorized projects
+      @templates = WikiTemplates.find(:all, :joins => :project,
+                                    :conditions => ["project_id = ? OR (shared = ? AND #{visible_conditions})" , @project_id, true ])
 			render 'eligeplantilla'
 		      else
 			render_404

@@ -5,8 +5,6 @@ class TemplatesController < ApplicationController
   before_filter :find_project, :authorize , :only => [:new, :edit, :destroy]
  
 
-
-
   def index
   end
 
@@ -16,6 +14,7 @@ class TemplatesController < ApplicationController
       @mitemplate = WikiTemplates.new
       @mitemplate.text = params[:mitemplate][:text]
       @mitemplate.name = params[:mitemplate][:name]
+      @mitemplate.shared = params[:mitemplate][:shared]
       @mitemplate.project_id = @project_id
       @mitemplate.author_id = User.current
       @mitemplate.save
@@ -38,8 +37,9 @@ class TemplatesController < ApplicationController
     if request.post?
     #if User.current.allowed_to?(:edit_templates, @project) && request.post?
       @mitemplate = WikiTemplates.find(params[:id])
-      @mitemplate.text = params[:mitemplate][:text]
       @mitemplate.name = params[:mitemplate][:name]
+      @mitemplate.text = params[:mitemplate][:text]
+      @mitemplate.shared = params[:mitemplate][:shared]
       @mitemplate.project_id = @project_id
       @mitemplate.save
       flash[:notice] = l(:notice_successful_update)
